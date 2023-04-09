@@ -1,0 +1,33 @@
+server:
+  error:
+    whitelabel:
+      enabled: true
+  port: 8088
+
+spring:
+
+  messages:
+    basename: messages
+    encoding: UTF-8
+  security:
+    user:
+      name: user
+      password: User@123
+      roles: USER,ADMIN
+  thymeleaf:
+    mode: LEGACYHTML5
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+      evergreen:
+        evergreenuaa: DEBUG
+  pattern:
+    console: '%clr(%d{E HH:mm:ss.SSS}){blue} %clr(%-5p) %clr(${PID}){faint} %clr(---){faint}
+              %clr([%8.15t]){cyan} %clr(%-40.40logger{0}){blue} %clr(:){red} %clr(%m){faint}%n'
+#  config: classpath:log4j2.xml

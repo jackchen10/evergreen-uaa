@@ -7,6 +7,7 @@ import lombok.val;
 import org.evergreen.evergreenuaa.security.filter.RestAuthenticationFilter;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
@@ -24,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,12 +39,18 @@ import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 @Slf4j
 @RequiredArgsConstructor
 @EnableWebSecurity(debug = true)
+@Import(SecurityProblemSupport.class)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final ObjectMapper objectMapper;
+    private final SecurityProblemSupport securityProblemSupport;
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeRequests(req -> req
+        httpSecurity
+                .exceptionHandling(exp -> exp
+                        .authenticationEntryPoint(securityProblemSupport)
+                        .accessDeniedHandler(securityProblemSupport))
+                .authorizeRequests(req -> req
                         .antMatchers("/authorize/**").permitAll()
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .antMatchers("/api/**").hasRole("USER")

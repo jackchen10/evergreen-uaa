@@ -23,6 +23,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>problem-spring-web</artifactId>
+            <version>${problem.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
             <version>${passay.version}</version>

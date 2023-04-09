@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = PasswordMatchValidator.class)
 @Documented
 public @interface PasswordMatch {
-    String message() default "Password Not Matched";
+    String message() default "{PasswordMatches.userDto}";
 
     Class<?>[] groups() default {};
 

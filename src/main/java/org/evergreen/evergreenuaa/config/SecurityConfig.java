@@ -74,15 +74,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .usersByUsernameQuery("select username,password,enabled from evergreen_users where users = ?")
                 .authoritiesByUsernameQuery("select username, authority from evergreen_authorities where username = ?")
                 .passwordEncoder(myPasswordEncoder())
-                /*.withUser("user")
-//                .password("{bcrypt}$2a$10$mNKRQQ5GTW8ndJcSSAVX8OxLoDOJG088RwdZ8cmMqfWjBQqwY8YTG")
-                .password(myPasswordEncoder().encode("User@123"))
-                .roles("USER", "ADMIN")
-                .and()
-                .withUser("sec_user")
-//                .password("{SHA-1}{zE7LED7/JzjyOIAjnbTgUU+F2ryReSEr3SlCxmAHINs=}5c998a9f7abb066dba3c1bbdcbd9f1d529bc9c65")
-                .password(myPasswordEncoder().encode("User@123"))
-                .roles("USER")*/
         ;
     }
 

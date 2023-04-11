@@ -2,8 +2,12 @@ package org.evergreen.evergreenuaa.api;
 
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class UserResource {
@@ -26,6 +30,11 @@ public class UserResource {
     @PostMapping("/greeting4")
     public String greeting4(@RequestParam String name, @RequestBody Profile profile) {
         return "Hello, Spring Security~~\n姓名: " + name  + "\n性别：" + profile.getGender()  + "\nIdNo：" + profile.getIdNo();
+    }
+
+    @GetMapping("/principal")
+    public Authentication getPrincipal() {
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 
     @Data

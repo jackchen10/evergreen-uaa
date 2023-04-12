@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.evergreen.evergreenuaa.security.filter.RestAuthenticationFilter;
+import org.evergreen.evergreenuaa.security.userdetailes.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
@@ -42,6 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final ObjectMapper objectMapper;
     private final SecurityProblemSupport securityProblemSupport;
     private final DataSource dataSource;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
@@ -69,10 +71,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .usersByUsernameQuery("select username,password,enabled from evergreen_users where users = ?")
-                .authoritiesByUsernameQuery("select username, authority from evergreen_authorities where username = ?")
+        auth
+                .userDetailsService(userDetailsService)
+//                .jdbcAuthentication()
+//                .dataSource(dataSource)
+//                .usersByUsernameQuery("select username,password,enabled from evergreen_users where users = ?")
+//                .authoritiesByUsernameQuery("select username, authority from evergreen_authorities where username = ?")
                 .passwordEncoder(myPasswordEncoder())
         ;
     }

@@ -61,5 +61,12 @@ spring:
           fail_on_pagination_over_collection_fetch: true
           in_clause_parameter_padding: true
     show-sql: false
-  profiles:
-    active: prod
+  ldap:
+    base: dc=evergreen,dc=org
+    embedded:
+      base-dn: dc=evergreen,dc=org
+      ldif: classpath:test-ldap-server.ldif
+      port: 8389
+    urls: ldap://localhost:8389/
+
+  profiles: prod

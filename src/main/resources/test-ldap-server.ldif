@@ -1,0 +1,23 @@
+dn: dc=evergreen,dc=org
+objectClass: top
+objectClass: domain
+
+dn: uid=EricChan,dc=evergreen,dc=org
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Eric Chan
+sn: Chan
+uid: EricChan
+userPassword: User@123
+
+dn: uid=Jackie,dc=evergreen,dc=org
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: joe Jackie
+sn: Eric
+uid: Jackie
+userPassword: User@123

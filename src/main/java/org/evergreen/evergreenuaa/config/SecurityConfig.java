@@ -4,13 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.evergreen.evergreenuaa.security.auth.ldap.LDAPMultiAuthenticationProvider;
+import org.evergreen.evergreenuaa.security.auth.ldap.LDAPUserRepository;
 import org.evergreen.evergreenuaa.security.filter.RestAuthenticationFilter;
+import org.evergreen.evergreenuaa.security.userdetailes.UserDetailsPasswordServiceImpl;
 import org.evergreen.evergreenuaa.security.userdetailes.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -44,6 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final SecurityProblemSupport securityProblemSupport;
     private final DataSource dataSource;
     private final UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsPasswordServiceImpl userDetailsPasswordService;
+    private final LDAPUserRepository ldapUserRepository;
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
@@ -71,14 +77,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(userDetailsService)
-//                .jdbcAuthentication()
-//                .dataSource(dataSource)
-//                .usersByUsernameQuery("select username,password,enabled from evergreen_users where users = ?")
-//                .authoritiesByUsernameQuery("select username, authority from evergreen_authorities where username = ?")
-                .passwordEncoder(myPasswordEncoder())
-        ;
+        auth.authenticationProvider(ldapMultiAuthenticationProvider());
+        auth.authenticationProvider(daoAuthenticationProvider());
+    }
+
+    @Bean
+    LDAPMultiAuthenticationProvider ldapMultiAuthenticationProvider() {
+        val ldapMultiAuthenticationProvider = new LDAPMultiAuthenticationProvider(ldapUserRepository);
+        return ldapMultiAuthenticationProvider;
+    }
+
+    @Bean
+    DaoAuthenticationProvider daoAuthenticationProvider() {
+        val daoAuthenticaitonProvider = new DaoAuthenticationProvider();
+        daoAuthenticaitonProvider.setUserDetailsService(userDetailsService);
+        daoAuthenticaitonProvider.setPasswordEncoder(myPasswordEncoder());
+        daoAuthenticaitonProvider.setUserDetailsPasswordService(userDetailsPasswordService);
+        return daoAuthenticaitonProvider;
     }
 
     PasswordEncoder myPasswordEncoder() {

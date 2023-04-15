@@ -2,6 +2,7 @@ package org.evergreen.evergreenuaa.utils;
 
 import io.jsonwebtoken.Jwts;
 import lombok.val;
+import org.evergreen.evergreenuaa.config.PropertiesConfig;
 import org.evergreen.evergreenuaa.entity.Role;
 import org.evergreen.evergreenuaa.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,7 @@ public class JwtUtilTest {
 
     @BeforeEach
     public void setup() {
-        jwtUtil = new JwtUtil();
+        jwtUtil = new JwtUtil(new PropertiesConfig());
     }
 
     @Test
@@ -37,7 +38,7 @@ public class JwtUtilTest {
                 .build();
 
         //生成JWT Token
-        val token = jwtUtil.createJwtToken(user);
+        val token = jwtUtil.createAccessToken(user);
 
         //解析JWT
         val paseredClaims = Jwts.parserBuilder()

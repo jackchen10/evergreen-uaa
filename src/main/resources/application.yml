@@ -24,3 +24,8 @@ spring:
     add-mappings: false
   application:
     name: evergreen-uaa
+
+evergreen:
+  jwt:
+    access-token-expire-time: 300000
+    refresh-token-expire-time: 2692000000

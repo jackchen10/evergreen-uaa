@@ -4,6 +4,7 @@ import lombok.Data;
 import org.evergreen.evergreenuaa.annotation.PasswordMatch;
 import org.evergreen.evergreenuaa.annotation.ValidEmail;
 import org.evergreen.evergreenuaa.annotation.ValidPassword;
+import org.evergreen.evergreenuaa.constant.Constants;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -28,6 +29,10 @@ public class UserDto implements Serializable {
     @NotNull
     @ValidEmail
     private String email;
+
+    @NotNull
+    @Pattern(regexp = Constants.PATTERN_MOBILE)
+    private String mobile;
 
     @NotNull
     @NotBlank

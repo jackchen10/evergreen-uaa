@@ -3,9 +3,9 @@ package org.evergreen.evergreenuaa.api;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @Slf4j
 @RestController
@@ -32,9 +32,15 @@ public class UserResource {
         return "Hello, Spring Security~~\n姓名: " + name  + "\n性别：" + profile.getGender()  + "\nIdNo：" + profile.getIdNo();
     }
 
-    @GetMapping("/principal")
+   /* @GetMapping("/principal")
     public Authentication getPrincipal() {
         return SecurityContextHolder.getContext().getAuthentication();
+    }*/
+
+    @GetMapping("/principal")
+    public String getCurrentPrincipalName(Principal principal) {
+        log.info("进入/api/principal方法");
+        return principal.getName();
     }
 
     @Data

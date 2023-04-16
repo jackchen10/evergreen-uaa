@@ -7,6 +7,7 @@ import lombok.val;
 import org.evergreen.evergreenuaa.security.auth.ldap.LDAPMultiAuthenticationProvider;
 import org.evergreen.evergreenuaa.security.auth.ldap.LDAPUserRepository;
 import org.evergreen.evergreenuaa.security.filter.RestAuthenticationFilter;
+import org.evergreen.evergreenuaa.security.jwt.JwtFilter;
 import org.evergreen.evergreenuaa.security.userdetailes.UserDetailsPasswordServiceImpl;
 import org.evergreen.evergreenuaa.security.userdetailes.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsServiceImpl userDetailsService;
     private final UserDetailsPasswordServiceImpl userDetailsPasswordService;
     private final LDAPUserRepository ldapUserRepository;
+    private final JwtFilter jwtFilter;
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
@@ -65,7 +67,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/api/**").hasRole("USER")
                         .anyRequest().authenticated())
                 .addFilterAt(restAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .csrf(csrf -> csrf.ignoringAntMatchers("/authorize/**", "/admin/**", "/api/**"))
+                .addFilterBefore(jwtFilter,UsernamePasswordAuthenticationFilter.class)
+//                .csrf(csrf -> csrf.ignoringAntMatchers("/authorize/**", "/admin/**", "/api/**"))
+                .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults());
     }
@@ -96,6 +100,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return daoAuthenticaitonProvider;
     }
 
+    @Bean
     PasswordEncoder myPasswordEncoder() {
         val idForDefault = "bcrypt";
         Map<String,PasswordEncoder> encoders = new HashMap<>();

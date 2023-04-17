@@ -5,6 +5,8 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import javax.validation.Valid;
+
 @Configuration
 @ConfigurationProperties(prefix = "evergreen")
 public class PropertiesConfig {
@@ -13,6 +15,51 @@ public class PropertiesConfig {
     @Setter
     private Jwt jwt = new Jwt();
 
+    @Getter
+    @Setter
+    private AliParam aliParam = new AliParam();
+
+    @Getter
+    @Setter
+    private SmsProvider smsProvider = new SmsProvider();
+
+    @Getter
+    @Setter
+    public static class AliParam {
+        private String apiKey;
+        private String apiSecret;
+    }
+
+    @Getter
+    @Setter
+    public static class SmsProvider {
+        private String name;
+        private String apiUrl;
+    }
+
+    @Getter
+    @Setter
+    @Valid
+    private LeanCloud leanCloud = new LeanCloud();
+
+    @Getter
+    @Setter
+    @Valid
+    private EmailProvider emailProvider = new EmailProvider();
+
+    @Getter
+    @Setter
+    public static class LeanCloud {
+        private String appId;
+        private String appKey;
+    }
+
+    @Getter
+    @Setter
+    public static class EmailProvider {
+        private String name;
+        private String apiKey;
+    }
 
     @Getter
     @Setter

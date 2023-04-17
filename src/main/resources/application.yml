@@ -10,6 +10,17 @@ server:
 spring:
   datasource:
     initialization-mode: embedded
+  mail:
+    host: ${SMTP_HOST}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    port: ${SMTP_PORT}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   messages:
     always-use-message-format: false
     basename: messages
@@ -29,3 +40,16 @@ evergreen:
   jwt:
     access-token-expire-time: 300000
     refresh-token-expire-time: 2692000000
+  ali:
+    api-key: ${ALI_API_KEY}
+    api-secret: ${ALI_API_SECRET}
+  sms-provider:
+    api-url: ${SMS_API_URL}
+    name: ${SMS_PROVIDER_NAME}
+  lean-cloud:
+    app-id: ${LEAN_CLOUD_APP_ID}
+    app-key: ${LEAN_CLOUD_APP_KEY}
+  email-provider:
+    api-key: ${EMAIL_API_KEY}
+    name: api
+

@@ -7,11 +7,13 @@ import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 @Builder
 @With
 @Data
@@ -50,6 +52,21 @@ public class User implements UserDetails, Serializable {
 
     @Column(name = "credentials_non_expired", nullable = false)
     private boolean credentialsNonExpired;
+
+    /**
+     * 是否启用两步认证
+     */
+    @Builder.Default
+    @NotNull
+    @Column(name = "using_mfa",nullable = false)
+    private boolean useringMfa = false;
+
+    /**
+     * 启用两步认证的key
+     */
+    @JsonIgnore
+    @Column(name = "mfa_key", nullable = false)
+    private String mfaKey;
 
     @ManyToMany
     @Fetch(FetchMode.JOIN)

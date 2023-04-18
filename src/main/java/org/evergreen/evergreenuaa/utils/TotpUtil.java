@@ -97,4 +97,8 @@ public class TotpUtil {
                 .decode(strKey),timeBasedOneTimePasswordGenerator.getAlgorithm()
         );
     }
+
+    public long getTimeStepInSeconds() {
+        return TIME_STEP;
+    }
 }

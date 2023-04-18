@@ -9,13 +9,15 @@ import org.evergreen.evergreenuaa.entity.User;
 import org.evergreen.evergreenuaa.repository.RoleRepository;
 import org.evergreen.evergreenuaa.repository.UserRepository;
 import org.evergreen.evergreenuaa.utils.JwtUtil;
-import org.springframework.beans.factory.annotation.Required;
+import org.evergreen.evergreenuaa.utils.TotpUtil;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class UserService {
     private final RoleRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final TotpUtil totpUtil;
 
     /**
      * 登录认证服务
@@ -49,10 +52,16 @@ public class UserService {
                     Set<Role> roleSet = new HashSet<>();
                     roleSet.add(role);
                     val userToSave = user.withAuthorities(roleSet)
-                            .withPassword(passwordEncoder.encode(user.getPassword()));
+                            .withPassword(passwordEncoder.encode(user.getPassword()))
+                            .withMfaKey(totpUtil.encodeKeyToString());
                     return userRepository.save(userToSave);
                 })
                 .orElseThrow(() -> new BadCredentialsException("找不到用户名"));
+    }
+
+    public Optional<User> findOptionalByUsernameAndPassword(String username, String password) {
+        return userRepository.findOptionalByUsername(username)
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()));
     }
 
     /**
@@ -80,5 +89,42 @@ public class UserService {
      */
     public boolean isMobileExisted(String mobile) {
         return userRepository.countByMobile(mobile) > 0;
+    }
+
+    /**
+     * 密码升级服务
+     * @param user
+     * @param newPassword
+     * @return
+     */
+    public UserDetails updatePassword(User user, String newPassword) {
+        return userRepository.findOptionalByUsername(user.getUsername())
+                .map(u -> {
+                    // withPassword 返回一个新的userDetails对象
+                    return (UserDetails)userRepository.save(u.withPassword(newPassword));
+                })
+                .orElse(user);
+    }
+
+    public Optional<String> createTotp(User user) {
+        return totpUtil.createTotp(user.getMfaKey());
+    }
+
+    public Optional<User> findOptionalByUsername(String username) {
+        return userRepository.findOptionalByUsername(username);
+    }
+
+    public Auth login(UserDetails userDetails) {
+        return new Auth(jwtUtil.createAccessToken(userDetails), jwtUtil.createRefreshToken(userDetails));
+    }
+
+    public Auth loginWithTotp(User user) {
+        val toSave = user.withMfaKey(totpUtil.encodeKeyToString());
+        val saved = saveUser(toSave);
+        return login(saved);
+    }
+
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 }
